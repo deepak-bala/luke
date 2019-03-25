@@ -308,10 +308,8 @@ public final class IndexUtils {
         String format = "unknown";
         try (IndexInput in = dir.openInput(segmentFileName, IOContext.READ)) {
           if (CodecUtil.CODEC_MAGIC == in.readInt()) {
-            int actualVersion = CodecUtil.checkHeaderNoMagic(in, "segments", SegmentInfos.VERSION_53, Integer.MAX_VALUE);
-            if (actualVersion == SegmentInfos.VERSION_53) {
-              format = "Lucene 5.3 or later";
-            } else if (actualVersion == SegmentInfos.VERSION_70) {
+            int actualVersion = CodecUtil.checkHeaderNoMagic(in, "segments", SegmentInfos.VERSION_70, Integer.MAX_VALUE);
+             if (actualVersion == SegmentInfos.VERSION_70) {
               format = "Lucene 7.0 or later";
             } else if (actualVersion == SegmentInfos.VERSION_72) {
               format = "Lucene 7.2 or later";
@@ -358,7 +356,8 @@ public final class IndexUtils {
       if (!res.containsKey(field)) {
         res.put(field, 0L);
       }
-      Terms terms = MultiFields.getTerms(reader, field);
+      // TODO
+      final Terms terms = reader.getTermVector(1, field);
       if (terms != null) {
         TermsEnum te = terms.iterator();
         while (te.next() != null) {
@@ -378,7 +377,8 @@ public final class IndexUtils {
     if (reader instanceof LeafReader) {
       return ((LeafReader) reader).getLiveDocs();
     } else {
-      return MultiFields.getLiveDocs(reader);
+      // TODO
+      return null;
     }
   }
 
@@ -391,7 +391,7 @@ public final class IndexUtils {
     if (reader instanceof LeafReader) {
       return ((LeafReader) reader).getFieldInfos();
     } else {
-      return MultiFields.getMergedFieldInfos(reader);
+      return FieldInfos.getMergedFieldInfos(reader);
     }
   }
 
@@ -427,7 +427,9 @@ public final class IndexUtils {
     if (reader instanceof LeafReader) {
       return ((LeafReader) reader).terms(field);
     } else {
-      return MultiFields.getTerms(reader, field);
+      // todo
+      //return MultiFields.getTerms(reader, field);
+      return null;
     }
   }
 
